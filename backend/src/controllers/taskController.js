@@ -1,5 +1,5 @@
 const Task = require("../models/Task");
-
+const logActivity = require("../utils/logActivity");
 
 // CREATE TASK
 const createTask = async (req, res) => {
@@ -13,6 +13,11 @@ const createTask = async (req, res) => {
       description,
       createdBy: req.user._id,
     });
+    await logActivity(
+  req.user._id,
+  "TASK_CREATED",
+  `Created task: ${task.title}`
+);
 
     res.status(201).json(task);
 
@@ -51,6 +56,11 @@ const updateTask = async (req, res) => {
   try {
 
     const task = await Task.findById(req.params.id);
+    await logActivity(
+  req.user._id,
+  "TASK_UPDATED",
+  `Updated task: ${updatedTask.title}`
+);
 
     if (!task) {
       return res.status(404).json({
@@ -88,6 +98,11 @@ const deleteTask = async (req, res) => {
   try {
 
     const task = await Task.findById(req.params.id);
+    await logActivity(
+  req.user._id,
+  "TASK_DELETED",
+  `Deleted task: ${task.title}`
+);
 
     if (!task) {
       return res.status(404).json({

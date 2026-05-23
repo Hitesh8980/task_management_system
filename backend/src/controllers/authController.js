@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 
 const User = require("../models/User");
 const generateToken = require("../utils/generatetoken");
+const logActivity = require("../utils/logActivity");
+
 
 
 // REGISTER USER
@@ -40,6 +42,11 @@ const registerUser = async (req, res) => {
     });
 
     console.log("USER CREATED");
+    await logActivity(
+  user._id,
+  "REGISTER",
+  `${user.name} registered`
+);
 
     res.status(201).json({
       _id: user._id,
@@ -68,6 +75,11 @@ const loginUser = async (req, res) => {
 
     // Find user
     const user = await User.findOne({ email });
+    await logActivity(
+  user._id,
+  "LOGIN",
+  `${user.name} logged in`
+);
 
     if (!user) {
       return res.status(401).json({
