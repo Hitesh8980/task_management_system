@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import toast from "react-hot-toast";
 
-import DashboardLayout from "../../layouts/Dashboardlayout";
+import DashboardLayout from "../../layouts/DashboardLayout";
 
 import API from "../../api/axios";
 
