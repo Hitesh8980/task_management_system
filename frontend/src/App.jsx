@@ -11,15 +11,12 @@ import UsersPage from "./pages/admin/Userpage";
 import LogsPage from "./pages/admin/Logspage";
 
 function App() {
-
   return (
     <Routes>
-
       {/* AUTH ROUTES */}
       <Route path="/login" element={<Login />} />
 
       <Route path="/register" element={<Register />} />
-
 
       {/* USER DASHBOARD */}
       <Route
@@ -31,7 +28,6 @@ function App() {
         }
       />
 
-
       {/* ADMIN DASHBOARD */}
       <Route
         path="/admin"
@@ -42,32 +38,30 @@ function App() {
         }
       />
       <Route
-  path="/tasks"
-  element={
-    <ProtectedRoute>
-      <TasksPage />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/admin/users"
-  element={
-    <ProtectedRoute adminOnly={true}>
-      <UsersPage />
-    </ProtectedRoute>
-  }
-/>
-<Route
-  path="/admin/logs"
-  element={
-    <ProtectedRoute adminOnly={true}>
-      <LogsPage />
-    </ProtectedRoute>
-  }
-/>
-
+        path="/tasks"
+        element={
+          <ProtectedRoute>
+            <TasksPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <UsersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/logs"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <LogsPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
-    
   );
 }
 

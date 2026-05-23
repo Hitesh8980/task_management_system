@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 
 import toast from "react-hot-toast";
 
-import DashboardLayout from "../../layouts/Dashboardlayout";
+import DashboardLayout from "../../layouts/DashboardLayout";
 
 import API from "../../api/axios";
 
-import TaskCard from "../../components/dashboard/taskCard";
+import TaskCard from "../../components/dashboard/TaskCard";
 
 
 const TasksPage = () => {
@@ -14,6 +14,8 @@ const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
 
   const [loading, setLoading] = useState(true);
+
+  const [search, setSearch] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -107,35 +109,27 @@ const TasksPage = () => {
 
 
   // UPDATE STATUS
-  const handleStatusChange = async (task) => {
+ // UPDATE STATUS
+const handleStatusChange = async (task) => {
+  try {
+    const updatedStatus = task.status === "Pending" ? "Completed" : "Pending";
 
-    try {
+    console.log("🔄 Updating task:", task._id, "→", updatedStatus);
 
-      const updatedStatus =
-        task.status === "Pending"
-          ? "Completed"
-          : "Pending";
+    const { data } = await API.put(`/tasks/${task._id}`, {
+      status: updatedStatus,
+    });
 
-      const { data } = await API.put(
-        `/tasks/${task._id}`,
-        {
-          status: updatedStatus,
-        }
-      );
-
-      setTasks(
-        tasks.map((t) =>
-          t._id === task._id ? data : t
-        )
-      );
-
-      toast.success("Task updated");
-
-    } catch (error) {
-
-      toast.error("Update failed");
-    }
-  };
+    setTasks(tasks.map((t) => (t._id === task._id ? data : t)));
+    toast.success("Task updated");
+  } catch (error) {
+    console.error("❌ Full Error:", error);
+    console.error("Response Data:", error.response?.data);
+    console.error("Status Code:", error.response?.status);
+    
+    toast.error(error.response?.data?.message || "Update failed");
+  }
+};
 
 
   return (
@@ -174,6 +168,7 @@ const TasksPage = () => {
               border
               border-slate-700
               outline-none
+              text-white
             "
           />
 
@@ -191,6 +186,7 @@ const TasksPage = () => {
               border
               border-slate-700
               outline-none
+              text-white
             "
           />
 
@@ -214,28 +210,93 @@ const TasksPage = () => {
       </div>
 
 
-      {/* TASK LIST */}
+      {/* SEARCH */}
+      <input
+        type="text"
+        placeholder="Search tasks..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="
+          w-full
+          mb-6
+          px-4
+          py-3
+          rounded-xl
+          bg-slate-900
+          border
+          border-slate-800
+          outline-none
+          text-white
+        "
+      />
+
+
+      {/* TASKS */}
       {
         loading ? (
 
-          <p className="text-slate-400">
-            Loading tasks...
-          </p>
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+            {
+              [...Array(6)].map((_, index) => (
+
+                <div
+                  key={index}
+                  className="
+                    h-52
+                    rounded-2xl
+                    bg-slate-900
+                    border
+                    border-slate-800
+                    animate-pulse
+                  "
+                />
+              ))
+            }
+
+          </div>
+
+        ) : tasks.length === 0 ? (
+
+          <div className="
+            bg-slate-900
+            border
+            border-slate-800
+            rounded-2xl
+            p-10
+            text-center
+          ">
+
+            <h2 className="text-2xl font-bold mb-2">
+              No Tasks Yet
+            </h2>
+
+            <p className="text-slate-400">
+              Create your first task to begin productivity tracking.
+            </p>
+
+          </div>
 
         ) : (
 
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
             {
-              tasks.map((task) => (
+              tasks
+                .filter((task) =>
+                  task.title
+                    .toLowerCase()
+                    .includes(search.toLowerCase())
+                )
+                .map((task) => (
 
-                <TaskCard
-                  key={task._id}
-                  task={task}
-                  onDelete={handleDeleteTask}
-                  onStatusChange={handleStatusChange}
-                />
-              ))
+                  <TaskCard
+                    key={task._id}
+                    task={task}
+                    onDelete={handleDeleteTask}
+                    onStatusChange={handleStatusChange}
+                  />
+                ))
             }
 
           </div>
