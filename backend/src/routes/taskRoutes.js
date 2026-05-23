@@ -4,7 +4,7 @@ const router = express.Router();
 
 const {
   createTask,
-  getMyTasks,
+  getTasks,
   updateTask,
   deleteTask,
 } = require("../controllers/taskController");
@@ -17,7 +17,7 @@ router.post("/", protect, createTask);
 
 
 // GET MY TASKS
-router.get("/", protect, getMyTasks);
+router.get("/", protect, getTasks);
 
 
 // UPDATE TASK
